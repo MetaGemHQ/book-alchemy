@@ -156,8 +156,6 @@ def delete_book(book_id):
     return redirect(url_for('home', success_message=success_message))
 
 
-# Create the database tables if they do not yet exist.
-# Safe to leave on; create_all() is a no-op when tables are already present.
 with app.app_context():
     db.create_all()
 
