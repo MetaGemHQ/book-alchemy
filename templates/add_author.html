@@ -4,22 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Add Author — My Digital Library</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
 
-  {% if success_message %}
-    <p style="color: green;"><strong>{{ success_message }}</strong></p>
-  {% endif %}
-  <form action="/add_author" method="POST">
-  <label for="name">Author Name:</label> 
-  <input type="text" id="name" name="name" required><br><br>
-  
-  <label for="birthdate">Birthdate:</label> 
-  <input type="date" id="birthdate" name="birthdate" required><br><br> 
-  <label for="date_of_death">Date of Death:</label> 
-  <input type="date" id="date_of_death" name="date_of_death"><br><br>
-  <input type="submit" value="Add Author"> 
-  </form>
+    <header>
+      <h1>Add a New Author</h1>
+      <nav>
+        <a href="/">Back to library</a> |
+        <a href="/add_book">Add Book</a>
+      </nav>
+    </header>
+
+    {% if success_message %}
+      <p class="flash flash-success"><strong>{{ success_message }}</strong></p>
+    {% endif %}
+
+    {% if error_message %}
+      <p class="flash flash-error"><strong>{{ error_message }}</strong></p>
+    {% endif %}
+
+    <form action="/add_author" method="POST">
+      <label for="name">Author Name:</label>
+      <input type="text" id="name" name="name" required><br><br>
+
+      <label for="birthdate">Birthdate:</label>
+      <input type="date" id="birthdate" name="birthdate" required><br><br>
+
+      <label for="date_of_death">Date of Death:</label>
+      <input type="date" id="date_of_death" name="date_of_death"><br><br>
+
+      <input type="submit" value="Add Author">
+    </form>
 
   </body>
 </html>

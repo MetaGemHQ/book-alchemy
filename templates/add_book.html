@@ -4,32 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Add Book — My Digital Library</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
 
-  {% if success_message %}
-    <p style="color: green;"><strong>{{ success_message }}</strong></p>
-  {% endif %}
+    <header>
+      <h1>Add a New Book</h1>
+      <nav>
+        <a href="/">Back to library</a> |
+        <a href="/add_author">Add Author</a>
+      </nav>
+    </header>
 
-  <form action="/add_book" method="POST">
-    <label for="isbn">ISBN:</label>
-    <input type="text" id="isbn" name="isbn" required><br><br>
+    {% if success_message %}
+      <p class="flash flash-success"><strong>{{ success_message }}</strong></p>
+    {% endif %}
 
-    <label for="title">Title:</label>
-    <input type="text" id="title" name="title" required><br><br>
+    {% if error_message %}
+      <p class="flash flash-error"><strong>{{ error_message }}</strong></p>
+    {% endif %}
 
-    <label for="publication_year">Publication Year:</label>
-    <input type="number" id="publication_year" name="publication_year" required><br><br>
+    <form action="/add_book" method="POST">
+      <label for="isbn">ISBN:</label>
+      <input type="text" id="isbn" name="isbn" required><br><br>
 
-    <label for="author_id">Author:</label>
-    <select id="author_id" name="author_id" required>
-      {% for author in authors %}
-        <option value="{{ author.id }}">{{ author.name }}</option>
-      {% endfor %}
-    </select><br><br>
+      <label for="title">Title:</label>
+      <input type="text" id="title" name="title" required><br><br>
 
-    <input type="submit" value="Add Book">
-  </form>
+      <label for="publication_year">Publication Year:</label>
+      <input type="number" id="publication_year" name="publication_year" required><br><br>
+
+      <label for="author_id">Author:</label>
+      <select id="author_id" name="author_id" required>
+        {% for author in authors %}
+          <option value="{{ author.id }}">{{ author.name }}</option>
+        {% endfor %}
+      </select><br><br>
+
+      <input type="submit" value="Add Book">
+    </form>
 
   </body>
 </html>

@@ -55,11 +55,21 @@ def home():
 def add_author():
     """Display the add-author form (GET) or create a new Author (POST)."""
     success_message = None
+    error_message = None
 
     if request.method == 'POST':
         name = request.form['name'].strip()
         birthdate_str = request.form['birthdate']
         date_of_death_str = request.form.get('date_of_death', '').strip()
+
+        if not name:
+            error_message = "Author name cannot be empty or whitespace."
+            return render_template('add_author.html', error_message=error_message)
+
+        existing_author = Author.query.filter_by(name=name).first()
+        if existing_author:
+            error_message = f"An author named '{name}' already exists. Please use a different name."
+            return render_template('add_author.html', error_message=error_message)
 
         birth_date = datetime.strptime(birthdate_str, '%Y-%m-%d').date()
         date_of_death = None
@@ -76,13 +86,14 @@ def add_author():
 
         success_message = f"Author '{name}' was successfully added!"
 
-    return render_template('add_author.html', success_message=success_message)
+    return render_template('add_author.html', success_message=success_message, error_message=error_message)
 
 
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book():
     """Display the add-book form (GET) or create a new Book (POST)."""
     success_message = None
+    error_message = None
 
     if request.method == 'POST':
         isbn = request.form['isbn'].strip()
@@ -90,20 +101,38 @@ def add_book():
         publication_year = int(request.form['publication_year'])
         author_id = int(request.form['author_id'])
 
-        new_book = Book(
-            isbn=isbn,
-            title=title,
-            publication_year=publication_year,
-            author_id=author_id
-        )
-        db.session.add(new_book)
-        db.session.commit()
+        if not isbn:
+            error_message = "ISBN cannot be empty or whitespace."
+        elif not title:
+            error_message = "Title cannot be empty or whitespace."
+        else:
+            existing_book = Book.query.filter_by(isbn=isbn).first()
+            if existing_book:
+                error_message = (
+                    f"A book with ISBN '{isbn}' already exists in the library "
+                    f"('{existing_book.title}'). ISBNs must be unique."
+                )
 
-        success_message = f"Book '{title}' was successfully added!"
+        if error_message is None:
+            new_book = Book(
+                isbn=isbn,
+                title=title,
+                publication_year=publication_year,
+                author_id=author_id
+            )
+            db.session.add(new_book)
+            db.session.commit()
+
+            success_message = f"Book '{title}' was successfully added!"
 
     authors = Author.query.order_by(Author.name).all()
 
-    return render_template('add_book.html', authors=authors, success_message=success_message)
+    return render_template(
+        'add_book.html',
+        authors=authors,
+        success_message=success_message,
+        error_message=error_message
+    )
 
 
 @app.route('/book/<int:book_id>/delete', methods=['POST'])
@@ -127,9 +156,10 @@ def delete_book(book_id):
     return redirect(url_for('home', success_message=success_message))
 
 
-# Create the database tables — already run once, now commented out
-# with app.app_context():
-#     db.create_all()
+# Create the database tables if they do not yet exist.
+# Safe to leave on; create_all() is a no-op when tables are already present.
+with app.app_context():
+    db.create_all()
 
 
 if __name__ == '__main__':
